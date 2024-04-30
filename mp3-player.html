@@ -1,0 +1,183 @@
+<!------------------BLOQUE CSS------------------>
+<style>
+    .mp3-player {
+        position: fixed;
+        left: 20px;
+        bottom: 20px;
+        background-color: #111;/*COLOR DE FONDO DEL REPRODUCTOR*/
+        border-radius: 20px;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        width: 320px;
+        max-width: calc(100% - 40px);
+        box-sizing: border-box;
+    }
+    
+    .controls {
+        flex: 1;
+        display: flex;
+        align-items: center;
+    }
+    
+    .volume-icon, .play, .pause{
+        font-size: 18px;
+        border-radius: 30%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color:#333;/*COLOR FONDO DE BOTONES*/
+    }
+    
+    .volume {
+        width: 80px;
+        margin-left: 10px;
+        display: none;
+    }
+    
+    .progress {
+        position: relative;
+        background-color: teal;/*BARRA DE PROGRESO PENDIENTE*/
+        height: 10px;
+        border-radius: 5px;
+        margin-left: 10px;
+        flex: 5;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .progress-slider {
+        position: absolute;
+        top: -5px;
+        left: 0;
+        width: 10px;
+        height: calc(100% + 10px);
+        background-color: #fff;/*SLIDER DE BARRA DE PROGRESO*/
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 2;
+    }
+    
+    .progress-bar {
+        background-color:aqua;/*BARRA DE PROGRESO COMPLETADA*/
+        height: 100%;
+        width: 0;
+        border-radius: 5px;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    
+    .time {
+        margin-left: 10px;
+        color: white;/*CONTADOR DE TIEMPO*/
+        flex: 1;
+        display: flex; 
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+
+<!------------------BLOQUE HTML------------------>
+<div class="mp3-player">
+    <audio id="audio" src="personalmente.mp3" autoplay></audio><!-- 'autoplay' habilita la reproduccion automatica-->
+    <div class="controls">
+      <button id="volumeBtn" class="volume-icon">🔊</button><!--EMOJI VOLUMEN-->
+      <input type="range" id="volumeControl" class="volume" min="0" max="1" step="0.1" value="1">
+      <button id="playPauseBtn" class="play">⏯️</button><!--EMOJI BOTON PLAY/PAUSE-->
+    </div>
+    <div class="progress">
+      <div id="progressBar" class="progress-bar"></div>
+      <div id="progressSlider" class="progress-slider"></div>
+    </div>
+    <div class="time">
+      <span id="currentTime">0:00</span> / <span id="totalTime">0:00</span>
+    </div>
+</div>
+
+<!------------------BLOQUE JAVASCRIPT------------------>
+<script>
+    const audio = document.getElementById('audio');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const volumeBtn = document.getElementById('volumeBtn');
+    const volumeControl = document.getElementById('volumeControl');
+    const progressBar = document.getElementById('progressBar');
+    const progressSlider = document.getElementById('progressSlider');
+    const currentTime = document.getElementById('currentTime');
+    const totalTime = document.getElementById('totalTime');
+
+    playPauseBtn.addEventListener('click', () => {
+    if (audio.paused) {
+        audio.play();
+        playPauseBtn.innerHTML = "⏸️";//II EMOJI BOTON PAUSA
+    } else {
+        audio.pause();
+        playPauseBtn.innerHTML = "▶️";//▶ EMOJI BOTON PLAY
+    }
+    });
+
+    volumeBtn.addEventListener('click', () => {
+        volumeControl.style.display = (volumeControl.style.display === 'block') ? 'none' : 'block';
+    });
+
+    audio.addEventListener('timeupdate', () => {
+        const progress = (audio.currentTime / audio.duration) * 100;
+        progressBar.style.width = `${progress}%`;
+        currentTime.textContent = formatTime(audio.currentTime);
+        totalTime.textContent = formatTime(audio.duration);
+    });
+
+    volumeControl.addEventListener('input', () => {
+        const volume = volumeControl.value;
+        audio.volume = volume;
+
+        let volumeEmoji = '';
+        if (volume == 0) {
+            volumeEmoji = '🔇';
+        } else if (volume <= 0.2) {
+            volumeEmoji = '🔈';
+        } else if (volume <= 0.6) {
+            volumeEmoji = '🔉';
+        } else {
+            volumeEmoji = '🔊';
+        }
+        volumeBtn.textContent = volumeEmoji;
+    });
+
+    progressSlider.addEventListener('mousedown', startDragging);
+    window.addEventListener('mouseup', stopDragging);
+
+    let isDragging = false;
+
+    function startDragging(e) {
+        isDragging = true;
+        updateProgress(e);
+        window.addEventListener('mousemove', updateProgress);
+        window.addEventListener('mouseup', stopDragging);
+    }
+
+    function updateProgress(e) {
+        if (isDragging) {
+            const barRect = progressBar.getBoundingClientRect();
+            let clickX = e.clientX - barRect.left;
+            clickX = Math.min(barRect.width, Math.max(0, clickX)); 
+            const percentClicked = clickX / barRect.width;
+            const newTime = percentClicked * audio.duration;
+            audio.currentTime = newTime;
+            progressSlider.style.left = `${clickX}px`;
+            progressSlider.style.transition = 'none';
+        }
+    }
+
+    function stopDragging() {
+        isDragging = false;
+        progressSlider.style.transition = '';
+        window.removeEventListener('mousemove', updateProgress);
+    }
+
+    function formatTime(seconds) {
+        const min = Math.floor(seconds / 60);
+        const sec = Math.floor(seconds % 60);
+        return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+    }
+</script>
