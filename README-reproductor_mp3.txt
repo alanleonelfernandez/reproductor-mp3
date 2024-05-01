@@ -1,3 +1,5 @@
+-------------------- VERSION JAVASCRIPT --------------------
+
 -La cancion indicada se setea en la etiqueta <audio> en 'src' poniendo la ruta hacia el archivo mp3.
 
 -Para que la musica se reproduzca automaticamente al recargar la pagina se debe agregar la propiedad 'autoplay' en la etiqueta '<audio>' que se ubica en el bloque HTML.
@@ -11,3 +13,11 @@
 -Etiqueta '<script>'se coloca al pie de la hoja del codigo.
 
 -El bloque HTML (div class="mp3-player") debe ir dentro del body.
+
+
+
+-------------------- VERSION IFRAME --------------------
+
+-Se puede cargar el archivo mp3 desde Google Drive, poniendo el link de compartir en publico y cambiandole "view" por "preview" en el link.
+
+

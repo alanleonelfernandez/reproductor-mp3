@@ -181,3 +181,33 @@
         return `${min}:${sec < 10 ? '0' : ''}${sec}`;
     }
 </script>
+
+
+
+
+
+
+<!--//  version iframe //-->
+
+<style>
+    iframe {
+        position: fixed;
+        left: 20px;
+        bottom: 20px;
+        background-color: rgb(3, 163, 255);/*COLOR DE FONDO DEL REPRODUCTOR*/
+        border-radius: 30px;
+        padding: 10px;
+        width: 450px;
+        height: 80px;
+        max-width: calc(100% - 40px);
+        box-sizing: border-box;
+    }
+    
+    @media only screen and (max-width: 768px) {
+        iframe {
+            left: 0;
+        }
+    }
+    </style>
+
+<iframe src="https://drive.google.com/file/d/1i3Ob91pi2gF4iCDASHKmjCOWvb6-0jb9/preview?autoplay=1"></iframe>
